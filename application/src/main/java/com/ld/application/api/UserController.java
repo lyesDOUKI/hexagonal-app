@@ -1,9 +1,7 @@
 package com.ld.application.api;
 
 import com.ld.application.mapper.UserDomainApiMapper;
-import com.ld.application.request.CreateUserRequest;
 import com.ld.application.request.UpdateUserRequest;
-import com.ld.application.response.CreateUserResponse;
 import com.ld.application.response.GetUserResponse;
 import com.ld.application.response.UpdateUserResponse;
 import com.ld.infrastructure.security.JwtConverter;
@@ -13,14 +11,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import ld.domain.feature.registeruser.CreateUserCommand;
-import ld.domain.feature.registeruser.RegisterUserUseCase;
 import ld.domain.feature.retrieveuser.GetUserByIdQuery;
 import ld.domain.feature.retrieveuser.GetUserUseCase;
 import ld.domain.feature.updateuser.UpdateUserCommand;
 import ld.domain.feature.updateuser.UpdateUserUseCase;
 import ld.domain.user.User;
-import ld.domain.user.information.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +30,14 @@ import java.util.UUID;
 @Tag(name = "User Management", description = "Operations related to user management")
 public class UserController {
 
-    private final RegisterUserUseCase registerUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
     private final GetUserUseCase getUserService;
     private final UserDomainApiMapper userMapper;
     private final JwtConverter jwtConverter;
 
     @Autowired
-    public UserController(RegisterUserUseCase registerUserUseCase, UpdateUserUseCase updateUserUseCase,
+    public UserController(UpdateUserUseCase updateUserUseCase,
                           GetUserUseCase getUserService, UserDomainApiMapper userMapper, JwtConverter jwtConverter) {
-        this.registerUserUseCase = registerUserUseCase;
         this.updateUserUseCase = updateUserUseCase;
         this.getUserService = getUserService;
         this.userMapper = userMapper;
@@ -69,26 +62,12 @@ public class UserController {
                 .orElse(ResponseEntity.noContent().build());
     }
 
-    @PostMapping
-    @Operation(summary = "Inscrire un utilisateur", description = "Cette opération va inscrire l'utilisateur dans la base de données")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Utilisateur inscrit",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CreateUserResponse.class))),
-            @ApiResponse(responseCode = "200", description = "Des contraintes n'ont pas été respectées pour créer un utilisateur")
-    })
-    public ResponseEntity<CreateUserResponse> registerUser(@RequestBody CreateUserRequest createUserRequest) {
-        CreateUserCommand createUserCommand = userMapper.userRequestToCommand(createUserRequest);
-        User user = registerUserUseCase.execute(createUserCommand);
-        return ResponseEntity.ok(userMapper.userToCreateUserResponse(user));
-    }
-
     @PutMapping("/me/update")
     @Operation(summary = "Mettre à jour un utilisateur", description = "Cette opération va mettre à jour un utilisateur dans la base de données")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Utilisateur mis à jour",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CreateUserResponse.class))),
+                            schema = @Schema(implementation = UpdateUserResponse.class))),
             @ApiResponse(responseCode = "200", description = "Des contraintes n'ont pas été respectées pour mettre à jour un utilisateur")
     })
     public ResponseEntity<UpdateUserResponse> updateUser(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {

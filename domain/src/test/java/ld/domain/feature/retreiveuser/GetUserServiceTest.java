@@ -2,7 +2,7 @@ package ld.domain.feature.retreiveuser;
 
 import ld.domain.feature.retrieveuser.GetUserService;
 import ld.domain.user.User;
-import ld.domain.dependencies.UserRepositoryPort;
+import ld.domain.feature.retrieveuser.RetrieveUserPort;
 import ld.domain.feature.retrieveuser.GetUserByIdQuery;
 import ld.domain.user.information.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ public class GetUserServiceTest {
     private GetUserService getUserService;
 
     @Mock
-    private UserRepositoryPort userRepositoryPort;
+    private RetrieveUserPort userRepositoryPort;
 
 
     @BeforeEach

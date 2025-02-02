@@ -3,7 +3,6 @@ package ld.domain.feature.registeruser;
 import ld.domain.user.exception.InvalidEmailException;
 import ld.domain.user.exception.UserDomainException;
 import ld.domain.user.User;
-import ld.domain.dependencies.UserRepositoryPort;
 import ld.domain.user.information.Email;
 
 import java.util.ArrayList;
@@ -12,11 +11,13 @@ import java.util.Optional;
 
 public class RegisterUserService implements RegisterUserUseCase {
 
-    private final UserRepositoryPort userRepositoryPort;
+    private final PersistUserPort userRepositoryPort;
     private final RegisterUserValidation createUserValidation;
+    private final RetrieveUserByEmailPort retrieveUserByEmailPort;
 
-    public RegisterUserService(UserRepositoryPort userRepositoryPort){
+    public RegisterUserService(PersistUserPort userRepositoryPort, RetrieveUserByEmailPort retrieveUserByEmailPort){
         this.userRepositoryPort = userRepositoryPort;
+        this.retrieveUserByEmailPort = retrieveUserByEmailPort;
         this.createUserValidation = new RegisterUserValidation();
     }
     @Override
@@ -31,8 +32,9 @@ public class RegisterUserService implements RegisterUserUseCase {
         User user = new User(createUserCommand);
         return this.userRepositoryPort.saveUser(user);
     }
+
     private Optional<User> findUserByEmail(Email email){
-        return this.userRepositoryPort.getUserByEmail(email);
+        return this.retrieveUserByEmailPort.getUserByEmail(email);
     }
     private void throwDomainException(List<RuntimeException> createUserExceptions){
         UserDomainException userDomainException = new UserDomainException();

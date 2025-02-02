@@ -2,7 +2,6 @@ package ld.domain.feature.registeruser;
 
 
 import ld.domain.user.User;
-import ld.domain.dependencies.UserRepositoryPort;
 import ld.domain.user.information.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,10 @@ class RegisterUserServiceTest {
     private RegisterUserService createUserService;
 
     @Mock
-    private UserRepositoryPort userRepositoryPort;
+    private RetrieveUserByEmailPort retrieveUserByEmailPort;
+
+    @Mock
+    private PersistUserPort persistUserPort;
 
     @BeforeEach
     public void setup(){
@@ -35,12 +37,12 @@ class RegisterUserServiceTest {
         CreateUserCommand createUserCommand = new CreateUserCommand(new Name("test"),
                 new Surname("testSurname"), new Email("test@test.com"),
                 new BirthDate(LocalDate.of(2007,9,30)));
-        when(this.userRepositoryPort.getUserByEmail(createUserCommand.email()))
+        when(this.retrieveUserByEmailPort.getUserByEmail(createUserCommand.email()))
                 .thenReturn(Optional.ofNullable(null));
         this.createUserService.execute(createUserCommand);
 
         User validUser = new User(createUserCommand);
-        verify(userRepositoryPort, times(1)).saveUser(validUser);
+        verify(persistUserPort, times(1)).saveUser(validUser);
     }
 
     @Test
@@ -51,6 +53,6 @@ class RegisterUserServiceTest {
         assertThrows(RuntimeException.class,
                 () -> createUserService.execute(createUserCommand));
         User user = new User(createUserCommand);
-        verify(userRepositoryPort, never()).saveUser(user);
+        verify(persistUserPort, never()).saveUser(user);
     }
 }

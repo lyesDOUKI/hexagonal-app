@@ -14,14 +14,6 @@ public class UserDomainEntityMapper {
                 new Surname(userEntity.getSurname()), new Email(userEntity.getEmail()),
                 new BirthDate(userEntity.getBirthdate()));
     }
-    public UserEntity userCreateToUserEntity(User user) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setName(user.name().value());
-        userEntity.setSurname(user.surname().value());
-        userEntity.setEmail(user.email().value());
-        userEntity.setBirthdate(user.birthDate().value());
-        return userEntity;
-    }
     public UserEntity userUpdateToUserEntity(User user) {
         UserEntity userEntity = new UserEntity();
         userEntity.setId(Optional.ofNullable(user.userId())

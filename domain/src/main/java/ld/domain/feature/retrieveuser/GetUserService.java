@@ -1,16 +1,15 @@
 package ld.domain.feature.retrieveuser;
 
 import ld.domain.user.User;
-import ld.domain.dependencies.UserRepositoryPort;
 
 import java.util.Optional;
 
 public class GetUserService implements GetUserUseCase {
 
-    private final UserRepositoryPort userRepositoryPort;
+    private final RetrieveUserPort userRepositoryPort;
     private final GetUserValidation getUserValidation;
 
-    public GetUserService(UserRepositoryPort userRepositoryPort) {
+    public GetUserService(RetrieveUserPort userRepositoryPort) {
         this.userRepositoryPort = userRepositoryPort;
         this.getUserValidation = new GetUserValidation();
 

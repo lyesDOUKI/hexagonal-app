@@ -11,6 +11,7 @@
     <modules>
         <module>domain</module>
         <module>application</module>
+        <module>keycloak-spi</module>
     </modules>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

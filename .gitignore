@@ -53,3 +53,5 @@ application/.gitignore
 **/*mvnw
 
 src/main/resources/db/migration/*.sql
+
+**/config.properties

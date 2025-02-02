@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 class UserTest {
 
     @Test
     public void user_command_should_initialize_fields_correctly() {
         CreateUserCommand createUserCommand = new
-                CreateUserCommand(new Name("test"), new Surname("test"),
+                CreateUserCommand(UUID.randomUUID(),new Name("test"), new Surname("test"),
                     new Email("test@test.com"), new BirthDate(LocalDate.now()));
         User user = new User(createUserCommand);
         Assertions.assertNull(user.userId());

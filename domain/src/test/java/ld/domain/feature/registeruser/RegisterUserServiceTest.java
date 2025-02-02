@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,7 +35,7 @@ class RegisterUserServiceTest {
 
     @Test
     void saveUser_should_save_user_when_valid() {
-        CreateUserCommand createUserCommand = new CreateUserCommand(new Name("test"),
+        CreateUserCommand createUserCommand = new CreateUserCommand(UUID.randomUUID(), new Name("test"),
                 new Surname("testSurname"), new Email("test@test.com"),
                 new BirthDate(LocalDate.of(2007,9,30)));
         when(this.retrieveUserByEmailPort.getUserByEmail(createUserCommand.email()))
@@ -47,7 +48,7 @@ class RegisterUserServiceTest {
 
     @Test
     void saveUser_should_not_save_user_when_validation_error() {
-        CreateUserCommand createUserCommand = new CreateUserCommand(new Name("test"),
+        CreateUserCommand createUserCommand = new CreateUserCommand(UUID.randomUUID(),new Name("test"),
                 new Surname("test"), new Email(""), new BirthDate(LocalDate.now()));
 
         assertThrows(RuntimeException.class,

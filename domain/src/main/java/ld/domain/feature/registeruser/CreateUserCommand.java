@@ -3,8 +3,9 @@ package ld.domain.feature.registeruser;
 import ld.domain.user.information.*;
 
 import java.util.Objects;
+import java.util.UUID;
 
-public record CreateUserCommand(Name name, Surname surname, Email email, BirthDate birthDate) {
+public record CreateUserCommand(UUID uuid, Name name, Surname surname, Email email, BirthDate birthDate) {
     public CreateUserCommand{
         validateNotNull(name, "name");
         validateNotNull(surname, "surname");

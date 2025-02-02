@@ -1,7 +1,6 @@
 package ld.domain.user.validation;
 
 import ld.domain.user.exception.InvalidUserIdException;
-import ld.domain.user.information.UserId;
 
 import java.util.Objects;
 import java.util.UUID;

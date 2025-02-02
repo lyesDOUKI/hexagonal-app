@@ -13,7 +13,7 @@ public record User(UUID uuid, UserId userId, Name name, Surname surname, Email e
         validateNotNull(email, "email");
     }
     public User(CreateUserCommand createUserCommand){
-        this(null,null, createUserCommand.name(), createUserCommand.surname(),
+        this(createUserCommand.uuid(),null, createUserCommand.name(), createUserCommand.surname(),
                 createUserCommand.email(), createUserCommand.birthDate());
     }
     private static <T> void validateNotNull(T value, String fieldName) {

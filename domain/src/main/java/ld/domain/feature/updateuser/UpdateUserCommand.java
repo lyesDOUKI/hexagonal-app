@@ -2,7 +2,6 @@ package ld.domain.feature.updateuser;
 
 import ld.domain.user.information.BirthDate;
 import ld.domain.user.information.Email;
-import ld.domain.user.information.UserId;
 
 import java.util.Objects;
 import java.util.Optional;

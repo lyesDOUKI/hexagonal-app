@@ -4,7 +4,6 @@ import ld.domain.user.exception.InvalidNameException;
 import ld.domain.user.information.Name;
 import ld.domain.user.information.Surname;
 
-import java.util.Objects;
 
 public class NameValidation {
     public void validate(Name name) {

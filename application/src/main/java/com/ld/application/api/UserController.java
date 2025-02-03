@@ -5,6 +5,7 @@ import com.ld.application.request.UpdateUserRequest;
 import com.ld.application.response.GetUserResponse;
 import com.ld.application.response.UpdateUserResponse;
 import com.ld.infrastructure.security.JwtConverter;
+import com.ld.infrastructure.security.TokenBlackListService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,12 +18,17 @@ import ld.domain.feature.updateuser.UpdateUserCommand;
 import ld.domain.feature.updateuser.UpdateUserUseCase;
 import ld.domain.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -30,18 +36,27 @@ import java.util.UUID;
 @Tag(name = "User Management", description = "Operations related to user management")
 public class UserController {
 
+    @Value("${keycloak.server}")
+    private String keycloakServerUrl;
+
+    @Value("${keycloak.realm}")
+    private String realm;
+
     private final UpdateUserUseCase updateUserUseCase;
     private final GetUserUseCase getUserService;
     private final UserDomainApiMapper userMapper;
     private final JwtConverter jwtConverter;
+    private final TokenBlackListService tokenBlackListService;
 
     @Autowired
     public UserController(UpdateUserUseCase updateUserUseCase,
-                          GetUserUseCase getUserService, UserDomainApiMapper userMapper, JwtConverter jwtConverter) {
+                          GetUserUseCase getUserService, UserDomainApiMapper userMapper,
+                          JwtConverter jwtConverter, TokenBlackListService tokenBlackListService) {
         this.updateUserUseCase = updateUserUseCase;
         this.getUserService = getUserService;
         this.userMapper = userMapper;
         this.jwtConverter = jwtConverter;
+        this.tokenBlackListService = tokenBlackListService;
     }
 
     @GetMapping("/me")
@@ -76,5 +91,25 @@ public class UserController {
         UpdateUserCommand updateUserCommand = userMapper.userRequestToCommand(updateUserRequest, UUID.fromString(uuid));
         User user = updateUserUseCase.updateUser(updateUserCommand);
         return ResponseEntity.ok(userMapper.userToUpdateUserResponse(user));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(Authentication authentication) {
+        Jwt jwt = this.jwtConverter.getJwtFromAuthentication(authentication);
+        long expiresIn = Objects.requireNonNull(jwt.getExpiresAt()).getEpochSecond() - Instant.now().getEpochSecond();
+        String logoutUrl = null;
+        try {
+            this.tokenBlackListService.blacklistToken(jwt.getTokenValue(), expiresIn);
+
+            logoutUrl = String.format("%s/realms/%s/protocol/openid-connect/logout?sub=%s",
+                    keycloakServerUrl,
+                    realm,
+                    this.jwtConverter.getPrincipalClaimName(jwt));
+
+            return ResponseEntity.ok(Map.of("logoutUrl", logoutUrl));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to process logout"));
+        }
     }
 }

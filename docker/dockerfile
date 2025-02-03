@@ -1,0 +1,7 @@
+FROM eclipse-temurin:21
+WORKDIR /opt/app
+COPY app-user-service.jar app-user-service.jar
+EXPOSE 8082
+
+# Point clé : lancement du jar + la config
+ENTRYPOINT exec java -Dspring.config.location=file:/opt/app/application.properties -jar app-user-service.jar

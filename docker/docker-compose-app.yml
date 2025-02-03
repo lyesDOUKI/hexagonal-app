@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    container_name: app-user-service
+    hostname: user-service
+    volumes:
+      - ./config/application.properties:/opt/app/application.properties
+    ports:
+      - "8082:8082"
+    depends_on:
+      - redis
+      - postgres
+      - keycloak
+    networks:
+      - ddd-app-network
+
+networks:
+  ddd-app-network:
+    external: true

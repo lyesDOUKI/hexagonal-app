@@ -1,0 +1,80 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: accountmanagement
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_pg_data:/var/lib/postgresql/data
+    networks:
+      - ddd-app-network
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass admin
+    volumes:
+      - redis_data:/data
+    restart: always
+    networks:
+      - ddd-app-network
+
+  mysql:
+    image: mysql:latest
+    container_name: keycloak-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloakpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - keycloack_mysql_data:/var/lib/mysql
+    networks:
+      - ddd-app-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.0
+    container_name: keycloak
+    restart: always
+    environment:
+      KC_DB: mysql
+      KC_DB_URL_HOST: mysql
+      KC_DB_URL_PORT: 3306
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloakpassword
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME: http://keycloak:8080
+      KC_HOSTNAME_URL: http://keycloak:8080
+      KC_HOSTNAME_ADMIN_URL: http://keycloak:8080
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak-spi-user-event.jar:/opt/keycloak/providers/keycloak-spi-user-event.jar
+    networks:
+      - ddd-app-network
+    depends_on:
+      - mysql
+    command: start-dev
+volumes:
+  db_pg_data:
+    external: true
+  keycloack_mysql_data:
+    external: true
+  redis_data:
+    external: true
+networks:
+  ddd-app-network:
+    external: true

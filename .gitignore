@@ -45,7 +45,6 @@ build/
 **/*.gitattributes
 application/.gitignore
 
-**/*.md
 **/*.mvnw
 **/*.mvn
 **/*.iml
@@ -55,3 +54,4 @@ application/.gitignore
 src/main/resources/db/migration/*.sql
 
 **/config.properties
+docker/*.jar

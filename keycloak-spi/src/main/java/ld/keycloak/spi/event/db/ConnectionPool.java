@@ -1,4 +1,4 @@
-package ld.keycloak.spi.db;
+package ld.keycloak.spi.event.db;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

@@ -1,14 +1,11 @@
-package ld.keycloak.spi.adapter;
+package ld.keycloak.spi.event.adapter;
 
 import ld.domain.feature.registeruser.PersistUserPort;
 import ld.domain.user.User;
-import ld.domain.user.information.*;
-import ld.keycloak.spi.db.ConnectionPool;
-import ld.keycloak.spi.db.UserUtils;
+import ld.keycloak.spi.event.db.ConnectionPool;
+import ld.keycloak.spi.event.db.UserUtils;
 
 import java.sql.*;
-import java.time.Instant;
-import java.util.UUID;
 
 public class RegisterUserAdapter implements PersistUserPort {
     private static final String INSERT_USER =

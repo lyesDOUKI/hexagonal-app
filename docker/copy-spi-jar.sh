@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -f "./keycloak-spi-user-event.jar" ]; then
+    echo "Suppression de l'ancien keycloak-spi-user-event.jar..."
+    rm -f "./keycloak-spi-user-event.jar"
+fi
+
 JAR_PATH=$(find ../keycloak-spi/target -name "keycloak-spi*.jar" | head -n 1)
 
 if [ -z "$JAR_PATH" ]; then

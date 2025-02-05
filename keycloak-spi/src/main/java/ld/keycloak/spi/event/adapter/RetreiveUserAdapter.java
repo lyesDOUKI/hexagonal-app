@@ -1,10 +1,10 @@
-package ld.keycloak.spi.adapter;
+package ld.keycloak.spi.event.adapter;
 
 import ld.domain.feature.registeruser.RetrieveUserByEmailPort;
 import ld.domain.user.User;
 import ld.domain.user.information.Email;
-import ld.keycloak.spi.db.ConnectionPool;
-import ld.keycloak.spi.db.UserUtils;
+import ld.keycloak.spi.event.db.ConnectionPool;
+import ld.keycloak.spi.event.db.UserUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

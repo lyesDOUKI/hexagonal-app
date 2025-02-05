@@ -59,6 +59,8 @@ services:
       KC_HOSTNAME_URL: http://keycloak:8080
       KC_HOSTNAME_ADMIN_URL: http://keycloak:8080
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+      KC_THEME: custom
+      KC_THEME_CACHE_TTL: 0
     ports:
       - "8080:8080"
     volumes:

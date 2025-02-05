@@ -20,6 +20,8 @@
 - Pour lancer que les services : 
 > docker compose -f docker-compose-services.yml up --build -d
 
+- Supprimer les images non utilisé par un conteneur : 
+> docker image prune -a -f
 ### Explicration 
 > L'intéret de lancer les services uniquement, c'est de travailler en mode développement, débuger, intéragir avec les services.  
 > Une fois bien avancé sur le développement, on lances l'ensemble de l'application sur docker pour vérifer le comportement.

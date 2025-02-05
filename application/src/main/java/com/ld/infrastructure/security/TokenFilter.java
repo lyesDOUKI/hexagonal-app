@@ -23,7 +23,6 @@ public class TokenFilter extends OncePerRequestFilter {
 
         if (token != null && tokenBlackListService.isBlacklisted(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"Token has been revoked\"}");
             return;
         }
 

@@ -1,29 +1,29 @@
-package ld.keycloak.spi;
+package ld.keycloak.spi.event;
 
 import ld.domain.feature.registeruser.*;
 import ld.domain.user.User;
+import ld.domain.user.exception.UserDomainException;
 import ld.domain.user.information.BirthDate;
 import ld.domain.user.information.Email;
 import ld.domain.user.information.Name;
 import ld.domain.user.information.Surname;
-import ld.keycloak.spi.adapter.RegisterUserAdapter;
-import ld.keycloak.spi.adapter.RetreiveUserAdapter;
-import org.keycloak.component.ComponentModel;
+import ld.keycloak.common.MessageUtils;
+import ld.keycloak.spi.event.adapter.RegisterUserAdapter;
+import ld.keycloak.spi.event.adapter.RetreiveUserAdapter;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventType;
 import org.keycloak.events.admin.AdminEvent;
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
-import org.keycloak.models.UserModel;
-import org.keycloak.storage.UserStorageProvider;
-import org.keycloak.storage.user.UserRegistrationProvider;
+import org.keycloak.models.*;
+import org.keycloak.sessions.CommonClientSessionModel;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
 public class SpiUserProvider implements EventListenerProvider {
-
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final KeycloakSession session;
     private final RegisterUserUseCase registerUserUseCase;
     private final PersistUserPort persistUserPort = new RegisterUserAdapter();
@@ -39,10 +39,19 @@ public class SpiUserProvider implements EventListenerProvider {
     }
     private CreateUserCommand buildUserDomain(UserModel userModel){
         UUID uuid = UUID.fromString(userModel.getId());
-        Surname surname = new Surname(userModel.getFirstName());
-        Name name = new Name(userModel.getLastName());
+        Surname surname = new Surname(userModel.getLastName());
+        Name name = new Name(userModel.getFirstName());
         Email email = new Email(userModel.getEmail());
-        BirthDate birthDate = new BirthDate(LocalDate.of(2001,8,3));
+        String birthdateFromUerModel = userModel.getFirstAttribute("birthdate");
+        System.out.println("##### Récuperation de la date de naissance : " + birthdateFromUerModel);
+        LocalDate localDate = null;
+        try {
+            localDate = LocalDate.parse(birthdateFromUerModel, formatter);
+        } catch (DateTimeParseException e) {
+            System.err.println("Erreur de conversion : " + e.getMessage());
+
+        }
+        BirthDate birthDate = new BirthDate(localDate);
 
         return new CreateUserCommand(uuid, name, surname,email,birthDate);
     }
@@ -65,6 +74,12 @@ public class SpiUserProvider implements EventListenerProvider {
                 } catch (Exception e) {
                     System.err.println("Erreur lors de l'enregistrement en BDD : " + e.getMessage());
                     removeUser(realmModel, user);
+                    if(e instanceof UserDomainException userDomainException){
+                        System.err.println("Exception du domain : ");
+                        userDomainException.getRuntimeExceptions().forEach(exception -> System.out.println(
+                                MessageUtils.getMessage(exception.getMessage())
+                        ));
+                    }
                 }
             }
         }

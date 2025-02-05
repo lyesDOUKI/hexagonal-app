@@ -1,7 +1,6 @@
-package ld.keycloak.spi;
+package ld.keycloak.spi.event;
 
 import org.keycloak.Config;
-import org.keycloak.component.ComponentModel;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventListenerProviderFactory;
 import org.keycloak.models.KeycloakSession;

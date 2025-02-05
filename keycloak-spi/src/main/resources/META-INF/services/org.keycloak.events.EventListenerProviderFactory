@@ -1,1 +1,1 @@
-ld.keycloak.spi.ApplicationStorageProvider
+ld.keycloak.spi.event.ApplicationStorageProvider

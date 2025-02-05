@@ -1,4 +1,4 @@
-package ld.keycloak.spi.db;
+package ld.keycloak.spi.event.db;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -f "./app-user-service.jar" ]; then
+    echo "Suppression de l'ancien app-user-service.jar..."
+    rm -f "./app-user-service.jar"
+fi
+
+
 JAR_PATH=$(find ../application/target -name "application*.jar" | head -n 1)
 
 if [ -z "$JAR_PATH" ]; then

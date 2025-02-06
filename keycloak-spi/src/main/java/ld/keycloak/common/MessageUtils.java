@@ -20,7 +20,7 @@ public class MessageUtils {
 
     public static String getMessage(String key){
         try {
-            return props.getProperty(key);
+            return props.getProperty(key) != null ? props.getProperty(key) : "Aucun message trouvé avec la clè : " + key;
         }catch (Exception e){
             throw new RuntimeException("enable to get message : " + e.getMessage());
         }

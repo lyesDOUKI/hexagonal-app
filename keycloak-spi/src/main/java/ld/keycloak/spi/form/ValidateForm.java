@@ -1,8 +1,13 @@
 package ld.keycloak.spi.form;
 
 import jakarta.ws.rs.core.MultivaluedMap;
-import ld.domain.user.information.BirthDate;
-import ld.domain.user.validation.BirthDateValidation;
+import ld.domain.feature.registeruser.CreateUserCommand;
+import ld.domain.feature.registeruser.RegisterUserValidation;
+import ld.domain.user.exception.UserDomainException;
+import ld.keycloak.common.AvailableKeycloakMessageEnum;
+import ld.keycloak.common.FieldEnum;
+import ld.keycloak.common.MessageUtils;
+import ld.keycloak.common.UserMapper;
 import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormContext;
 import org.keycloak.authentication.ValidationContext;
@@ -12,16 +17,20 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.FormMessage;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static ld.keycloak.spi.event.SpiUserProvider.formatter;
 
 public class ValidateForm implements FormAction {
+
+    private static final Logger LOGGER = Logger.getLogger(ValidateForm.class.getName());
     private KeycloakSession session;
+    private final RegisterUserValidation registerUserValidation;
     public ValidateForm(KeycloakSession session){
         this.session = session;
+        this.registerUserValidation = new RegisterUserValidation();
     }
     @Override
     public void buildPage(FormContext formContext, LoginFormsProvider loginFormsProvider) {
@@ -30,25 +39,34 @@ public class ValidateForm implements FormAction {
 
     @Override
     public void validate(ValidationContext validationContext) {
-        System.out.println("BEGIN VALIDATE");
+        LOGGER.info("On validation SPI");
         MultivaluedMap<String, String> formData = validationContext.getHttpRequest().getDecodedFormParameters();
-        String date = formData.getFirst("birthdate");
-        BirthDateValidation validation = new BirthDateValidation();
-        LocalDate localDate = null;
+        CreateUserCommand userCommand = UserMapper.buildUserCommand(formData);
+        List<RuntimeException> errors = new ArrayList<>();
         try {
-            localDate = LocalDate.parse(date, formatter);
-        } catch (DateTimeParseException e) {
-            System.err.println("Erreur de conversion : " + e.getMessage());
-        }
-        try {
-            validation.validate(new BirthDate(localDate));
-            System.out.println("VALIDATION OK");
+            LOGGER.log(Level.INFO,"Start validation for user named : {0}", userCommand.name());
+            this.registerUserValidation.validate(userCommand, errors);
+            LOGGER.info("Validation OK");
             validationContext.success();
         }catch (Exception e){
-            System.err.println("VALIDATION KO");
-            validationContext.error("birthdateRequired");
-            validationContext.validationError(formData, List.of(new FormMessage("birthdate",
-                    "age.petit")));
+            LOGGER.log(Level.SEVERE, "Error validation for user named : {0}", userCommand.name());
+            LOGGER.log(Level.SEVERE, "Exception message : {0}", e.getMessage());
+            if(e instanceof UserDomainException userDomainException){
+                LOGGER.log(Level.SEVERE, "It's a domain exception, errors : ");
+                userDomainException.getRuntimeExceptions().forEach(ex ->
+                        LOGGER.log(Level.SEVERE, MessageUtils.getMessage(ex.getMessage()))
+                        );
+                validationContext.error("validationError");
+                List<FormMessage> formMessages = userDomainException.getRuntimeExceptions().stream()
+                        .map(ex ->
+                                new FormMessage(FieldEnum.getFieldFromException(ex),
+                                        AvailableKeycloakMessageEnum.isMessageManagedByKeycloak(ex.getMessage())
+                                        ? ex.getMessage() : MessageUtils.getMessage(ex.getMessage())
+                        ))
+                        .toList();
+                validationContext.validationError(formData, formMessages);
+
+            }
         }
     }
 

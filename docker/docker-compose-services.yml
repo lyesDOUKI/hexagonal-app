@@ -61,10 +61,13 @@ services:
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
       KC_THEME: custom
       KC_THEME_CACHE_TTL: 0
+      MESSAGE_FILE_PATH: /opt/keycloak/messages/messagesDomain_fr.properties
+
     ports:
       - "8080:8080"
     volumes:
       - ./keycloak-spi-user-event.jar:/opt/keycloak/providers/keycloak-spi-user-event.jar
+      - ./messages:/opt/keycloak/messages
     networks:
       - ddd-app-network
     depends_on:

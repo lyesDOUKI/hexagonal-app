@@ -4,7 +4,6 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import ld.domain.feature.registeruser.CreateUserCommand;
 import ld.domain.feature.registeruser.RegisterUserValidation;
 import ld.domain.user.exception.UserDomainException;
-import ld.keycloak.common.AvailableKeycloakMessageEnum;
 import ld.keycloak.common.FieldEnum;
 import ld.keycloak.common.MessageUtils;
 import ld.keycloak.common.UserMapper;
@@ -60,8 +59,7 @@ public class ValidateForm implements FormAction {
                 List<FormMessage> formMessages = userDomainException.getRuntimeExceptions().stream()
                         .map(ex ->
                                 new FormMessage(FieldEnum.getFieldFromException(ex),
-                                        AvailableKeycloakMessageEnum.isMessageManagedByKeycloak(ex.getMessage())
-                                        ? ex.getMessage() : MessageUtils.getMessage(ex.getMessage())
+                                        MessageUtils.getMessage(ex.getMessage())
                         ))
                         .toList();
                 validationContext.validationError(formData, formMessages);

@@ -33,7 +33,7 @@ public class RegisterUserAdapter implements PersistUserPort {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    LOGGER.info("User successfully saved with ID: " + rs.getInt("id"));
+                    LOGGER.info("User successfully saved with ID db : " + rs.getInt("id"));
                     return UserUtils.mapToUser(rs);
                 } else {
                     LOGGER.severe("User creation failed, no rows returned");

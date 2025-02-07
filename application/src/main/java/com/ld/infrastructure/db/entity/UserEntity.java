@@ -1,6 +1,7 @@
 package com.ld.infrastructure.db.entity;
 
 import jakarta.persistence.*;
+import ld.domain.user.information.adresse.Adresse;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
@@ -33,6 +34,10 @@ public class UserEntity {
 
     @Column(nullable = false, unique = true, columnDefinition = "keycloak_id")
     private UUID keycloakId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_adresse_id")
+    private UserAddress adresse;
 
     // Getters and Setters
     public Long getId() {
@@ -85,5 +90,13 @@ public class UserEntity {
 
     public void setKeycloakId(UUID keycloakId) {
         this.keycloakId = keycloakId;
+    }
+
+    public UserAddress getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(UserAddress adresse) {
+        this.adresse = adresse;
     }
 }

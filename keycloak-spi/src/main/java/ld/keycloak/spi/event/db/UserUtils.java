@@ -1,5 +1,6 @@
 package ld.keycloak.spi.event.db;
 
+import ld.domain.feature.registeruser.CreateUserCommand;
 import ld.domain.user.User;
 import ld.domain.user.information.*;
 
@@ -16,6 +17,7 @@ public class UserUtils {
         Surname surname = new Surname(rs.getString("user_surname"));
         Email email = new Email(rs.getString("user_email"));
         BirthDate birthDate = new BirthDate(rs.getDate("user_birthDate").toLocalDate());
-        return new User(uuid, userId, name, surname, email, birthDate);
+        CreateUserCommand createUserCommand = new CreateUserCommand(uuid, name, surname, email, birthDate);
+        return new User(createUserCommand);
     }
 }

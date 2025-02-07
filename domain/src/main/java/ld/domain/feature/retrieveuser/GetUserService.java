@@ -1,5 +1,6 @@
 package ld.domain.feature.retrieveuser;
 
+import ld.domain.feature.common.RetrieveUserPort;
 import ld.domain.user.User;
 
 import java.util.Optional;

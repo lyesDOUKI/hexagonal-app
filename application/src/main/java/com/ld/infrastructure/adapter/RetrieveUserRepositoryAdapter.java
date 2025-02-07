@@ -2,7 +2,7 @@ package com.ld.infrastructure.adapter;
 
 import com.ld.infrastructure.mapper.UserDomainEntityMapper;
 import com.ld.infrastructure.db.repository.IUserRepository;
-import ld.domain.feature.retrieveuser.RetrieveUserPort;
+import ld.domain.feature.common.RetrieveUserPort;
 import ld.domain.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

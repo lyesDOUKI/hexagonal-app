@@ -57,7 +57,7 @@ public class SpiUserProvider implements EventListenerProvider {
                     LOGGER.info("Executing user registration for: " + userCommand.name());
 
                     User userPersisted = registerUserUseCase.execute(userCommand);
-                    LOGGER.info("User successfully registered in DB with userId: " + userPersisted.userId().value());
+                    LOGGER.info("User successfully registered in DB");
 
                 } catch (Exception e) {
                     LOGGER.severe("Error during user registration: " + e.getMessage());

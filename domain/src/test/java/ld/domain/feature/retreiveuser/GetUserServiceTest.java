@@ -1,8 +1,9 @@
 package ld.domain.feature.retreiveuser;
 
+import ld.domain.feature.registeruser.CreateUserCommand;
 import ld.domain.feature.retrieveuser.GetUserService;
 import ld.domain.user.User;
-import ld.domain.feature.retrieveuser.RetrieveUserPort;
+import ld.domain.feature.common.RetrieveUserPort;
 import ld.domain.feature.retrieveuser.GetUserByIdQuery;
 import ld.domain.user.information.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +35,9 @@ public class GetUserServiceTest {
     @Test
     void getUserById_should_return_user_when_id_is_valid() {
         UUID userId = UUID.randomUUID();
-        User expectedUser = new User(userId,new UserId(1L), new Name("test"),
+        CreateUserCommand createUserCommand = new  CreateUserCommand(userId, new Name("test"),
                 new Surname("test"), new Email("test@example.com"), new BirthDate(LocalDate.now()));
+        User expectedUser = new User(createUserCommand);
         when(userRepositoryPort.getUserById(expectedUser.uuid())).thenReturn(Optional.of(expectedUser));
         GetUserByIdQuery userByIdQuery = new GetUserByIdQuery(userId);
         Optional<User> result = getUserService.getUserById(userByIdQuery);

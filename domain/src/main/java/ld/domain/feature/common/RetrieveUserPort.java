@@ -1,4 +1,4 @@
-package ld.domain.feature.retrieveuser;
+package ld.domain.feature.common;
 
 import ld.domain.user.User;
 

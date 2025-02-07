@@ -1,16 +1,15 @@
 package com.ld.application.mapper;
 
-import com.ld.application.request.UpdateUserRequest;
+import com.ld.application.request.PutAddressRequest;
 import com.ld.application.response.GetUserResponse;
-import com.ld.application.response.UpdateUserResponse;
-import ld.domain.feature.updateuser.UpdateUserCommand;
+import ld.domain.feature.putaddress.PutAddressToUserCommand;
 import ld.domain.user.User;
-import ld.domain.user.information.*;
+import ld.domain.user.information.adresse.Adresse;
+import ld.domain.user.information.adresse.information.*;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -19,17 +18,23 @@ public class UserDomainApiMapper {
 
 
     public GetUserResponse userToGetUserResponse(User user){
-        return new GetUserResponse(user.userId().value(), user.name().value(),
+        GetUserResponse getUserResponse = new GetUserResponse(user.userId().value(), user.name().value(),
                 user.email().value(), user.birthDate().value().format(FORMATTER));
+        if(Objects.nonNull(user.adresse())){
+            GetUserResponse.MonAdresse monAdresse = new GetUserResponse.MonAdresse(
+                    user.adresse().nomAdresse().value(), user.adresse().complementAdresse().value(),
+                    user.adresse().codePostal().value(), user.adresse().ville().value(),
+                    user.adresse().pays().value()
+            );
+            getUserResponse.setAdresse(monAdresse);
+        }
+        return getUserResponse;
     }
-    public UpdateUserResponse userToUpdateUserResponse(User user){
-        return new UpdateUserResponse(user.name().value(), user.email().value());
-    }
-    public UpdateUserCommand userRequestToCommand(UpdateUserRequest updateUserRequest, UUID id){
-        return new UpdateUserCommand(id,
-                Optional.ofNullable(updateUserRequest.email()).map(Email::new),
-                Optional.ofNullable(updateUserRequest.birthdate())
-                        .map(LocalDate::parse)
-                        .map(BirthDate::new));
+    public PutAddressToUserCommand userRequestToCommand(PutAddressRequest putAddressRequest, UUID id){
+        Adresse adresse = new Adresse(null, new NomAdresse(putAddressRequest.getNomAdresse()),
+                new ComplementAdresse(putAddressRequest.getComplementAdresse()),
+                new CodePostal(putAddressRequest.getCodePostal()), new Ville(putAddressRequest.getVille()),
+                new Pays(putAddressRequest.getPays()));
+        return new PutAddressToUserCommand(id, adresse);
     }
 }

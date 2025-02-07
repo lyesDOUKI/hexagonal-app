@@ -1,9 +1,8 @@
 package com.ld.application.api;
 
 import com.ld.application.mapper.UserDomainApiMapper;
-import com.ld.application.request.UpdateUserRequest;
+import com.ld.application.request.PutAddressRequest;
 import com.ld.application.response.GetUserResponse;
-import com.ld.application.response.UpdateUserResponse;
 import com.ld.infrastructure.security.JwtConverter;
 import com.ld.infrastructure.security.TokenBlackListService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,10 +11,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import ld.domain.feature.putaddress.PutAddressToUserCommand;
+import ld.domain.feature.putaddress.PutAddressUseCase;
 import ld.domain.feature.retrieveuser.GetUserByIdQuery;
 import ld.domain.feature.retrieveuser.GetUserUseCase;
-import ld.domain.feature.updateuser.UpdateUserCommand;
-import ld.domain.feature.updateuser.UpdateUserUseCase;
 import ld.domain.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,17 +42,17 @@ public class UserController {
     @Value("${keycloak.realm}")
     private String realm;
 
-    private final UpdateUserUseCase updateUserUseCase;
+    private final PutAddressUseCase putAddressUseCase;
     private final GetUserUseCase getUserService;
     private final UserDomainApiMapper userMapper;
     private final JwtConverter jwtConverter;
     private final TokenBlackListService tokenBlackListService;
 
     @Autowired
-    public UserController(UpdateUserUseCase updateUserUseCase,
+    public UserController(PutAddressUseCase putAddressUseCase,
                           GetUserUseCase getUserService, UserDomainApiMapper userMapper,
                           JwtConverter jwtConverter, TokenBlackListService tokenBlackListService) {
-        this.updateUserUseCase = updateUserUseCase;
+        this.putAddressUseCase = putAddressUseCase;
         this.getUserService = getUserService;
         this.userMapper = userMapper;
         this.jwtConverter = jwtConverter;
@@ -77,20 +77,22 @@ public class UserController {
                 .orElse(ResponseEntity.noContent().build());
     }
 
-    @PutMapping("/me/update")
-    @Operation(summary = "Mettre à jour un utilisateur", description = "Cette opération va mettre à jour un utilisateur dans la base de données")
+    @PutMapping("/me/address")
+    @Operation(summary = "Mettre à jour un utilisateur avec une adresse postal",
+            description = "Cette opération va mettre à jour l'adresse d'un utilisateur dans la base de données")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Utilisateur mis à jour",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = UpdateUserResponse.class))),
+                            schema = @Schema(implementation = GetUserResponse.class))),
             @ApiResponse(responseCode = "200", description = "Des contraintes n'ont pas été respectées pour mettre à jour un utilisateur")
     })
-    public ResponseEntity<UpdateUserResponse> updateUser(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
+    public ResponseEntity<GetUserResponse> updateUser(@RequestBody
+                                                      @Valid PutAddressRequest putAddressRequest, Authentication authentication) {
         Jwt jwt = this.jwtConverter.getJwtFromAuthentication(authentication);
         String uuid = this.jwtConverter.getPrincipalClaimName(jwt);
-        UpdateUserCommand updateUserCommand = userMapper.userRequestToCommand(updateUserRequest, UUID.fromString(uuid));
-        User user = updateUserUseCase.updateUser(updateUserCommand);
-        return ResponseEntity.ok(userMapper.userToUpdateUserResponse(user));
+        PutAddressToUserCommand putAddressToUserCommand = this.userMapper.userRequestToCommand(putAddressRequest, UUID.fromString(uuid));
+        User user = this.putAddressUseCase.execute(putAddressToUserCommand);
+        return ResponseEntity.ok(userMapper.userToGetUserResponse(user));
     }
 
     @GetMapping("/logout")

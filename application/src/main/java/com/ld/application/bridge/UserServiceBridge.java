@@ -1,11 +1,12 @@
 package com.ld.application.bridge;
 
-import ld.domain.feature.retrieveuser.RetrieveUserPort;
-import ld.domain.feature.updateuser.UpdateUserPort;
+import ld.domain.feature.common.RetrieveUserPort;
+import ld.domain.feature.putaddress.PersistAddressPort;
+import ld.domain.feature.putaddress.PutAddressService;
+import ld.domain.feature.putaddress.PutAddressUseCase;
+import ld.domain.feature.putaddress.VerifyAddressPort;
 import ld.domain.feature.retrieveuser.GetUserService;
 import ld.domain.feature.retrieveuser.GetUserUseCase;
-import ld.domain.feature.updateuser.UpdateUserService;
-import ld.domain.feature.updateuser.UpdateUserUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,9 +20,10 @@ public class UserServiceBridge {
     }
 
     @Bean
-    public UpdateUserUseCase updateUserUseCase(UpdateUserPort updateUserPort,
+    public PutAddressUseCase updateUserUseCase(PersistAddressPort persistAddressPort,
+                                               VerifyAddressPort verifyAddressPort,
                                                RetrieveUserPort retrieveUserPort){
-        return new UpdateUserService(updateUserPort, retrieveUserPort);
+        return new PutAddressService(verifyAddressPort, retrieveUserPort, persistAddressPort);
     }
 
 }

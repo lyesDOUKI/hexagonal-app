@@ -17,7 +17,6 @@ class UserTest {
                 CreateUserCommand(UUID.randomUUID(),new Name("test"), new Surname("test"),
                     new Email("test@test.com"), new BirthDate(LocalDate.now()));
         User user = new User(createUserCommand);
-        Assertions.assertNull(user.userId());
         Assertions.assertEquals("test", user.name().value());
         Assertions.assertEquals("test", user.surname().value());
         Assertions.assertEquals("test@test.com", user.email().value());

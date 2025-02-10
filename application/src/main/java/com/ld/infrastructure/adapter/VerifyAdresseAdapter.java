@@ -23,7 +23,7 @@ public class VerifyAdresseAdapter implements VerifyAddressPort {
     public boolean isValidAddress(Adresse adresse) {
         ApiGouvResponse apiGouvResponse = this.apiGouvCaller.callApiToVerifyAddress(adresse);
         Optional<ApiGouvResponse.Feature> optionalFeature = apiGouvResponse.getFeatures().stream().filter(feature ->
-                feature.getProperties().getPostcode().equals(adresse.codePostal().value().toString()))
+                feature.getProperties().getPostcode().equals(adresse.codePostal().value()))
                 .filter(feature -> {
                     ApiGouvResponse.Feature.Properties properties = feature.getProperties();
                     return properties.getScore() >= SMALL_VALUE_ACCEPTABLE && properties.getScore() <= BEST_VALUE;

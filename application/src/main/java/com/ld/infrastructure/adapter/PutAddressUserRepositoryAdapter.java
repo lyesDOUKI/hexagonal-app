@@ -27,8 +27,8 @@ public class PutAddressUserRepositoryAdapter implements PersistAddressPort {
     @Override
     public User execute(Adresse adresse, UserId userId) {
         Optional<UserAddress> optionalUserAddress = this.iUserAddressRepository
-                .findByNomAdresseAndComplementAdresseAndCodePostal(adresse.nomAdresse().value().toUpperCase(),
-                        adresse.complementAdresse().value().toUpperCase(),adresse.codePostal().value());
+                .findByNomAdresseAndComplementAdresseAndCodePostal(adresse.nomAdresse().value(),
+                        adresse.complementAdresse().value(),adresse.codePostal().value());
         UserAddress userAddress = optionalUserAddress.orElseGet(() ->this.createUserAdresse(adresse));
         Optional<UserEntity> optionalUserEntity = this.userRepository.findById(userId.value());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> new RuntimeException("User not found to put the adress"));

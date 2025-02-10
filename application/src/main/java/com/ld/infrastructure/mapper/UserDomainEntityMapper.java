@@ -40,11 +40,11 @@ public class UserDomainEntityMapper {
 
     public UserAddress AdresseToUserAddress(Adresse adresse){
         UserAddress userAddress = new UserAddress();
-        userAddress.setNomAdresse(adresse.nomAdresse().value());
-        userAddress.setComplementAdresse(adresse.complementAdresse().value());
+        userAddress.setNomAdresse(adresse.nomAdresse().value().toUpperCase());
+        userAddress.setComplementAdresse(adresse.complementAdresse().value().toUpperCase());
         userAddress.setCodePostal(adresse.codePostal().value());
-        userAddress.setVille(adresse.ville().value());
-        userAddress.setPays(adresse.pays().value());
+        userAddress.setVille(adresse.ville().value().toUpperCase());
+        userAddress.setPays(adresse.pays().value().toUpperCase());
         return userAddress;
     }
 }
